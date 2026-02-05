@@ -8,14 +8,14 @@ ICAL_URL = os.environ["ICAL_URL"]
 DISCORD_WEBHOOK = os.environ["DISCORD_WEBHOOK"]
 SEEN_FILE = "seen.json"
 
-# Reminder windows: (min_seconds, max_seconds, label)
+TARGET_CLASS = "COMP-4710"
+
 REMINDER_WINDOWS = [
     (23*3600, 24*3600, "📅 24 hour reminder"),
     (55*60, 65*60, "⏰ 1 hour reminder"),
     (8*60, 12*60, "🚨 10 minute reminder"),
 ]
 
-# Load seen state
 try:
     with open(SEEN_FILE, "r") as f:
         seen = set(json.load(f))
@@ -31,7 +31,10 @@ for event in cal.walk("VEVENT"):
     name = str(event.get("summary"))
     start = event.get("dtstart").dt
 
-    # Handle all-day events
+    course_text = str(event.get("location", "")) + str(event.get("description", ""))
+    if TARGET_CLASS not in course_text:
+        continue
+
     if isinstance(start, datetime):
         if start.tzinfo is None:
             start = start.replace(tzinfo=timezone.utc)
@@ -57,6 +60,7 @@ for event in cal.walk("VEVENT"):
                     "title": name,
                     "description": label,
                     "fields": [
+                        {"name": "Course", "value": TARGET_CLASS},
                         {"name": "Time", "value": start.strftime("%Y-%m-%d %H:%M UTC")}
                     ],
                     "color": 3447003
@@ -64,6 +68,5 @@ for event in cal.walk("VEVENT"):
             }
             requests.post(DISCORD_WEBHOOK, json=payload)
 
-# Save seen state
 with open(SEEN_FILE, "w") as f:
     json.dump(list(seen), f)
