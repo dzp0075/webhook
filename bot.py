@@ -26,8 +26,14 @@ else:
     start = datetime.combine(start, datetime.min.time(), tzinfo=timezone.utc)
 
 
-    if start > now:
-        messages.append((start, name))
+    delta = start - now
+event_id = name + str(start)
+
+if 23*3600 < delta.total_seconds() < 24*3600:
+    if event_id in seen:
+        continue
+    seen.add(event_id)
+
 
 messages.sort()
 
