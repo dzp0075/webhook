@@ -4,8 +4,8 @@ from datetime import datetime, timezone
 import json
 import os
 
-ICAL_URL = os.environ["https://auburn.instructure.com/feeds/calendars/user_woolTC1ifghVMuSSrH2xMXfnFWmN9R7lwrVPNKlp.ics"]
-DISCORD_WEBHOOK = os.environ["https://discord.com/api/webhooks/1462163119160692941/GyyotPPKyCfPA64PJw10Gq3IsHJER-MplSkLH17wFQdQyYsrfRlmGagkkvzoW-Jecb17"]
+ICAL_URL = os.environ["ICAL_URL"]
+DISCORD_WEBHOOK = os.environ["DISCORD_WEBHOOK"]
 
 data = requests.get(ICAL_URL).text
 cal = icalendar.Calendar.from_ical(data)
