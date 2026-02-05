@@ -17,8 +17,14 @@ for event in cal.walk("VEVENT"):
     name = str(event.get("summary"))
     start = event.get("dtstart").dt
 
+# Handle all-day events (date vs datetime)
+if isinstance(start, datetime):
     if start.tzinfo is None:
         start = start.replace(tzinfo=timezone.utc)
+else:
+    # Convert date → datetime at midnight UTC
+    start = datetime.combine(start, datetime.min.time(), tzinfo=timezone.utc)
+
 
     if start > now:
         messages.append((start, name))
